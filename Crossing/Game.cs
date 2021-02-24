@@ -8,29 +8,29 @@ namespace Crossing
         public Coast LeftCoast { get; set; }
         public Coast RightCoast { get; set; }
         public Boat Boat { get; set; }
-        public List<Passager> Passagers { get; set; }
+        public List<Passenger> Passengers { get; set; }
 
         public Game()
         {
-            Passagers = GetPassagers();
+            Passengers = GetPassengers();
             LeftCoast = new Coast("Левый");
             RightCoast = new Coast("Правый");
-            LeftCoast.Passagers = Passagers;
+            LeftCoast.Passengers = Passengers;
             Boat = new Boat(LeftCoast);
         }
 
         public bool IsEnd()
         {
-            return RightCoast.Passagers.Count == 3;
+            return RightCoast.Passengers.Count == 3;
         }
 
-        private List<Passager> GetPassagers()
+        private List<Passenger> GetPassengers()
         {
-            return new List<Passager>
+            return new List<Passenger>
             {
-                new Passager(1, "Волк", "Коза"),
-                new Passager(2, "Коза", "Капуста"),
-                new Passager(3, "Капуста", "")
+                new Passenger(1, "Волк", "Коза"),
+                new Passenger(2, "Коза", "Капуста"),
+                new Passenger(3, "Капуста", "")
             };
         }
 
@@ -48,9 +48,9 @@ namespace Crossing
 
         public string ShowState()
         {
-            return $"{LeftCoast.GetPassagersInfo()}{Environment.NewLine}" +
+            return $"{LeftCoast.GetPassengersInfo()}{Environment.NewLine}" +
                    $"{Environment.NewLine}" +
-                   $"{RightCoast.GetPassagersInfo()}{Environment.NewLine}" +
+                   $"{RightCoast.GetPassengersInfo()}{Environment.NewLine}" +
                    $"{Environment.NewLine}" +
                    $"{Boat.ShowState()}{Environment.NewLine}";
         }
@@ -58,11 +58,9 @@ namespace Crossing
         public string ShowControlKey()
         {
             return $"Возможые действия:{Environment.NewLine}" +
-                   $"{Environment.NewLine}" +
-                   $"Загрузить пассажира в лодку: клавиша SPACE{Environment.NewLine}" +
-                   $"{Environment.NewLine}" +
-                   $"Убрать пассажира из лодки: клавиша DELETE{Environment.NewLine}" +
-                   $"{Environment.NewLine}" +
+                   $"Посмотреть описание игры: клавиша HOME{Environment.NewLine}" +
+                   $"Посадить пассажира в лодку: клавиша SPACE{Environment.NewLine}" +
+                   $"Высадить пассажира из лодки: клавиша DELETE{Environment.NewLine}" +
                    $"Переправить лодку на другой берег: стрелка <- ВЛЕВО или ВПРАВО ->{Environment.NewLine}";
         }
     }

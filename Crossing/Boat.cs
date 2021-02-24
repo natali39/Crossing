@@ -4,7 +4,7 @@ namespace Crossing
 {
     public class Boat
     {
-        public Passager Passager { get; set; }
+        public Passenger Passeger { get; set; }
         public Coast Coast { get; set; }
 
         public Boat(Coast coast)
@@ -16,9 +16,9 @@ namespace Crossing
         {
             var boatState = $"Лодка у станции: {Coast.Name} берег{Environment.NewLine}";
 
-            if (Passager != null)
+            if (Passeger != null)
             {
-                boatState += $"Пассажир в лодке: {Passager.Name}";
+                boatState += $"Пассажир в лодке: {Passeger.Name}";
             }
             else
             {
@@ -28,12 +28,12 @@ namespace Crossing
             return boatState;
         }
 
-        public bool AddPassager(Passager passager)
+        public bool AddPassager(Passenger passager)
         {
-            if (Passager == null)
+            if (Passeger == null)
             {
-                Passager = passager;
-                Coast.Passagers.Remove(passager);
+                Passeger = passager;
+                Coast.Passengers.Remove(passager);
                 return true;
             }
             else return false;
@@ -41,12 +41,16 @@ namespace Crossing
 
         public void RemovePassager()
         {
-            Passager = null;
+            if (Passeger != null)
+            {
+                Coast.Passengers.Add(Passeger);
+                Passeger = null;
+            }
         }
 
         public bool IsEmpty()
         {
-            return Passager == null;
+            return Passeger == null;
         }
     }
 }

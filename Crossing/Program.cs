@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Crossing
@@ -9,10 +10,13 @@ namespace Crossing
         {
             var game = new Game();
 
+            Console.WriteLine(game.ShowMission());
+            Console.WriteLine("Нажмите любую клавишу, чтобы начать игру.");
+            Console.ReadKey();
+
             while (true)
             {
-                Console.WriteLine(game.ShowMission());
-                Console.WriteLine();
+                Console.Clear();
                 Console.WriteLine(game.ShowControlKey());
                 Console.WriteLine();
                 Console.WriteLine(game.ShowState());
@@ -31,7 +35,7 @@ namespace Crossing
 
                         if (boat.IsEmpty() == false)
                         {
-                            Console.WriteLine($"В лодке уже находится пассажир {boat.Passager.Name}.");
+                            Console.WriteLine($"В лодке уже находится пассажир {boat.Passeger.Name}.");
                             Console.WriteLine("Вы не можете посадить в лодку больше одного пассажира");
                             Thread.Sleep(3000);
                             break;
@@ -44,9 +48,30 @@ namespace Crossing
                             break;
                         }
 
-                        var boardingIsComplieted = BoardingPasseger(boat);
-                        if (boardingIsComplieted == false) break;
+                        Console.WriteLine("Введите номер пассажира, которого хотите перевезти, и нажмите клавишу ENTER");
 
+                        var userInput = Console.ReadLine();
+
+                        if (int.TryParse(userInput, out var inputPassengerId) == false)
+                        {
+                            Console.WriteLine("Нужно ввести число - номер пассажира.");
+                            Thread.Sleep(2000);
+                            break;
+                        }
+
+                        var selectedPassenger = currentCoast.GetPassager(inputPassengerId);
+
+                        if (selectedPassenger == null)
+                        {
+                            Console.WriteLine("Пассажира с таким номером нет на этом берегу");
+                            Thread.Sleep(2000);
+                            break;
+                        }
+
+                        boat.AddPassager(selectedPassenger);
+
+                        Console.WriteLine($"Пассажир {selectedPassenger.Name} в лодке.");
+                        Thread.Sleep(2000);
                         break;
 
                     case ConsoleKey.Delete:
@@ -58,37 +83,42 @@ namespace Crossing
                             break;
                         }
 
-                        currentCoast.Passagers.Add(boat.Passager);
                         boat.RemovePassager();
-
                         break;
 
                     case ConsoleKey.LeftArrow:
+                        if (currentCoast == game.LeftCoast)
+                        {
+                            Console.WriteLine("Вы уже на левом берегу.");
+                            Thread.Sleep(2000);
+                            break;
+                        }
 
-                        if (CanStayPassegers(currentCoast) == false)
+                        if (currentCoast.CanStayPassengers() == false)
                             break;
 
                         boat.Coast = game.LeftCoast;
-
-                        if (boat.Passager != null)
-                        {
-                            boat.Coast.Passagers.Add(boat.Passager);
-                            boat.Passager = null;
-                        }
                         break;
 
                     case ConsoleKey.RightArrow:
+                        if (currentCoast == game.RightCoast)
+                        {
+                            Console.WriteLine("Вы уже на правом берегу.");
+                            Thread.Sleep(2000);
+                            break;
+                        }
 
-                        if (CanStayPassegers(currentCoast) == false)
+                        if (currentCoast.CanStayPassengers() == false)
                             break;
 
                         boat.Coast = game.RightCoast;
+                        break;
 
-                        if (boat.Passager != null)
-                        {
-                            boat.Coast.Passagers.Add(boat.Passager);
-                            boat.Passager = null;
-                        }
+                    case ConsoleKey.Home:
+                        Console.Clear();
+                        Console.WriteLine(game.ShowMission());
+                        Console.WriteLine("Нажмите любую клавишу, чтобы продолжить игру.");
+                        Console.ReadKey();
                         break;
 
                     default:
@@ -100,61 +130,7 @@ namespace Crossing
                     Console.WriteLine("Игра окончена. Вы выиграли!");
                     break;
                 }
-
-                Console.Clear();
             }
         }
-
-        private static bool BoardingPasseger(Boat boat)
-        {
-            Console.WriteLine("Введите номер пассажира, которого хотите перевезти, и нажмите клавишу ENTER");
-
-            var userInput = Console.ReadLine();
-
-            var inputIsNumber = int.TryParse(userInput, out var inputPassegerId);
-
-            if (inputIsNumber == false)
-            {
-                Console.WriteLine("Нужно ввести число - номер пассажира.");
-                Thread.Sleep(2000);
-                return false;
-            }
-
-            var currentCoast = boat.Coast;
-            var selectedPasseger = currentCoast.GetPassager(inputPassegerId);
-
-            if (selectedPasseger == null)
-            {
-                Console.WriteLine("Пассажира с таким номером нет на этом берегу");
-                Thread.Sleep(2000);
-                return false;
-            }
-
-            var boarding = boat.AddPassager(selectedPasseger);
-            if (boarding)
-            {
-                currentCoast.Passagers.Remove(selectedPasseger);
-            }
-
-            Console.WriteLine($"Пассажир {selectedPasseger.Name} в лодке.");
-            Thread.Sleep(2000);
-            return true;
-        }
-
-        private static bool CanStayPassegers(Coast coast)
-        {
-            var compatibility = coast.CheckCompatibility(coast.Passagers);
-
-            if (compatibility == false)
-            {
-                Console.WriteLine("Вы не cможете покинуть этот берег, т.к. оставшиеся на берегу пассажиры несовместимы.");
-                Console.WriteLine("Для продолжения нажмите ENTER");
-                Console.ReadLine();
-
-                return false;
-            }
-            return true;
-        }
-
     }
 }
